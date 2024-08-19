@@ -1,4 +1,5 @@
 import random
+#FrostJan
 
 # Pokemon lsit characters and their base powers
 pokemon_list = {
