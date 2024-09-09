@@ -1,36 +1,39 @@
 import random
 #FrostJan
 
-# Pokemon lsit characters and their base powers
+# Pokémon list characters and their base powers
 pokemon_list = {
-    'Pikachu': 33,
-    'Charmander': 35,
-    'Bulbasaur': 34,
-    'Squirtle': 37,
-    'Jigglypuff': 30,
-    'Eevee': 32,
-    'Snorlax': 36,
-    'Gengar': 38,
-    'Machamp': 39,
+    'Pikachu': 25,
+    'Charmander': 28,
+    'Bulbasaur': 27,
+    'Squirtle': 30,
+    'Jigglypuff': 22,
+    'Eevee': 26,
+    'Snorlax': 34,
+    'Gengar': 35,
+    'Machamp': 37,
     'Mewtwo': 40,
 }
 
 def calculate_power(base_power):
-
     # The power can be calculated as 
     # Final Power = base Power + Random Variation 
     variation = random.randint(-10, 10)
     return base_power + variation
 
 def select_pokemon():
+    # To select a Pokémon character
+    print("\n" + "-"*40)
+    print("| {:<3} | {:<15} | {:<10} |".format("#", "Pokémon", "Base Power"))
+    print("-"*40)
 
-    # to select a Pokemon character
     while True:
-        print("Choose your Pokémon:")
         for i, (pokemon, power) in enumerate(pokemon_list.items(), 1):
-            print(f"{i}. {pokemon} (Base Power: {power})")  
+            print("| {:<3} | {:<15} | {:<10} |".format(i, pokemon, power))
+        print("-"*40)
+        
         try:
-            choice = int(input("Enter the index number Pokémon: "))
+            choice = int(input("Enter the number of Pokémon: "))
             if 1 <= choice <= len(pokemon_list):
                 selected_pokemon = list(pokemon_list.keys())[choice - 1]
                 return selected_pokemon, pokemon_list[selected_pokemon]
@@ -40,8 +43,7 @@ def select_pokemon():
             print("Invalid input, please enter a number.")
 
 def battle(user_pokemon, user_power):
-
-    # a random Pokemon for the computer
+    # A random Pokémon for the computer
     opponent_pokemon, opponent_base_power = random.choice(list(pokemon_list.items()))
     opponent_power = calculate_power(opponent_base_power)
 
@@ -59,27 +61,40 @@ def battle(user_pokemon, user_power):
         return user_pokemon, user_power, opponent_pokemon, opponent_power, 'Tie'
 
 def main():
-    print("Welcome to the Pokémon Battle Simulator!")
-    print("Select the Pokemon to fight with ramdom Pokemon computer")
+    print("\n" + "="*80)
+    print("{:^80}".format("WELCOME TO THE POKÉMON BATTLE SIMULATOR"))
+    print("="*80)
+    print("\n" + "{:^80}".format("⚡️ Choose your Pokémon and battle against a randomly selected computer opponent! ⚡️"))
+    print("\n" + "-"*80)
+    print("{:^80}".format("How the Game Works:"))
+    print("- You select a Pokémon from the list.")
+    print("- A random Pokémon will be chosen by the computer.")
+    print("- Each Pokémon has a base power, but a random variation will apply.")
+    print("- Battle and see if your chosen Pokémon can defeat the computer's Pokémon!")
+    print("- There's a summary of your battles at the end of the game.")
+    print("- Press 'c' to continue battling, 'n' for a new Pokémon, or 'x' to exit.")
+    print("-"*80 + "\n")
 
-    # to store each battle result
+    # To store each battle result
     battle_number = 0
-    user_total_power = 0
     battle_results = []  
     win_count = 0
     loss_count = 0
     tie_count = 0
 
-    # Pokemon selection
+    # Pokémon selection
     user_pokemon, base_power = select_pokemon()
     user_power = calculate_power(base_power)
 
     while True:
+        # Conduct a battle
         user_pokemon, user_power, opponent_pokemon, computer_power, status = battle(user_pokemon, user_power)
 
+        # Store the results
         battle_number += 1
         battle_results.append((battle_number, user_pokemon, user_power, opponent_pokemon, computer_power, status))
 
+        # Update counts
         if status == 'User Wins':
             win_count += 1
         elif status == 'Computer Wins':
@@ -87,16 +102,27 @@ def main():
         else:
             tie_count += 1
 
-        print(f"Battle {battle_number}: Your Pokémon Power: {user_power}, Status: {status.capitalize()}\n")
+        # Display battle results
+        print("\n" + "-"*85)
+        print("| {:<5} | {:<20} | {:<10} | {:<20} | {:<10} | {:<15} |".format("No.", "User Pokémon", "User Power", "Computer Pokémon", "Comp. Power", "Result"))
+        print("-"*85)
+        print("| {:<5} | {:<20} | {:<10} | {:<20} | {:<10} | {:<15} |".format(
+            battle_number, user_pokemon, user_power, opponent_pokemon, computer_power, status))
+        print("-"*85)
 
-        next_step = input("Press 'c' to continue battling, 'n' for new Pokémon, or 'x' to exit: ").lower()
+        next_step = input("\nPress 'c' to continue battling, 'n' for new Pokémon, or 'x' to exit: ").lower()
+        
         if next_step == 'x':
+            # Show a summary of battles
             print("\nThank you for playing! Battle Summary:")
-            print(f"{'Battle number':<15}{'User Pokémon (Power)':<25}{'Computer Pokémon (Power)':<30}{'Status'}")
+            print("-"*85)
+            print("| {:<5} | {:<20} | {:<10} | {:<20} | {:<10} | {:<15} |".format("No.", "User Pokémon", "User Power", "Computer Pokémon", "Comp. Power", "Result"))
+            print("-"*85)
             for result in battle_results:
-                print(f"{result[0]:<15}{result[1]} ({result[2]}){'':<8}{result[3]} ({result[4]}){'':<8}{result[5]}")
+                print("| {:<5} | {:<20} | {:<10} | {:<20} | {:<10} | {:<15} |".format(result[0], result[1], result[2], result[3], result[4], result[5]))
+            print("-"*85)
             
-            # battle Status
+            # Overall battle status
             if win_count > loss_count:
                 battle_status = "User Wins"
             elif loss_count > win_count:
@@ -104,15 +130,18 @@ def main():
             else:
                 battle_status = "Tie"
                 
-            print(f"\nBattle Status: {battle_status}")
+            print(f"\nFinal Battle Status: {battle_status}")
             break
+
         elif next_step == 'n':
-            # to select a new Pokemon
+            # Select a new Pokémon and recalculate its power
             user_pokemon, base_power = select_pokemon()
             user_power = calculate_power(base_power)
+        
         elif next_step == 'c':
-            # Continue with the same Pokemon
-            user_power = user_total_power  # Keep user current total power
+            # Continue with the same Pokémon, recalculate its power for the new battle
+            user_power = calculate_power(base_power)
+
         else:
             print("Invalid input, exiting the game.")
             break
