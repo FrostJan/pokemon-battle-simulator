@@ -86,7 +86,7 @@ def display_battle_status(pokemon, player_name, poison_pots, healing_pots):
     print(tabulate([[pokemon.name, "/".join(pokemon.types), f"{pokemon.hp:.2f}", condition]],
                    headers=["Pokémon Name", "Type", "Health", "Condition"], tablefmt="grid", stralign="center"))
     
-    # Display Actions using tabulate
+    # Display Actions 
     actions_data = [["Attack(Z)", "Defense(X)", f"Poison Pot(C): {poison_pots}", f"Healing Pot(V): {healing_pots}", f"Queue(B): {queue_status}"]]
     print("\nActions")
     print(tabulate(actions_data, tablefmt="grid", stralign="center"))
@@ -158,7 +158,7 @@ def display_action_result(player_name, action, pokemon, opponent, damage=None, s
     if action == "b" and switch_hp_change:
         switch_detail = f"{pokemon.name} is switched out, losing 15 HP {switch_hp_change['pokemon_before']:.2f} > {switch_hp_change['pokemon_after']:.2f}. {opponent.name} gains 10 HP {switch_hp_change['opponent_before']:.2f} > {switch_hp_change['opponent_after']:.2f}."
         result_data.append([switch_detail])
-
+                
     print(tabulate(result_data, tablefmt="grid", stralign="center"))
 
 def display_battle_results(battle_results):
@@ -178,7 +178,7 @@ def display_battle_results(battle_results):
     # Final score
     result_data.append(["Final Score", "", scores["P1"], scores["P2"]])
 
-    # Print results in tabular format using tabulate
+    # Print results
     print("\n" + tabulate(result_data, headers=["Player #", "Result", "Score", "Score"], tablefmt="grid"))
 
 def battle(pokemon1, pokemon2, player1_name, player2_name, player1_pokemons, player2_pokemons):
@@ -237,7 +237,9 @@ def battle(pokemon1, pokemon2, player1_name, player2_name, player1_pokemons, pla
         if not pokemon2.is_alive():
             fight_results.append((player1_name, pokemon1.name, pokemon2.name, "P1"))
             if all(not p.is_alive() for p in player2_pokemons):
-                print("Player 1 wins the game!")
+                print_centered_header("Champion")
+                result_data = [[f"{player1_name} wins the game!"]]
+                print(tabulate(result_data, tablefmt="grid", stralign="center"))
                 break
             else:
                 pokemon2 = queue_mode(player2_name, pokemon2, player2_pokemons, pokemon1)
@@ -288,7 +290,9 @@ def battle(pokemon1, pokemon2, player1_name, player2_name, player1_pokemons, pla
         if not pokemon1.is_alive():
             fight_results.append((player2_name, pokemon2.name, pokemon1.name, "P2"))
             if all(not p.is_alive() for p in player1_pokemons):
-                print("Player 2 wins the game!")
+                print_centered_header("Champion")
+                result_data = [[f"{player2_name} wins the game!"]]
+                print(tabulate(result_data, tablefmt="grid", stralign="center"))
                 break
             else:
                 pokemon1 = queue_mode(player1_name, pokemon1, player1_pokemons, pokemon2)
@@ -305,7 +309,7 @@ def choose_pokemons(pokemons, player_name, previous_pokemons=None):
     print(f"\n{player_name}, choose your 3 Pokémon (e.g., '1 2 3'):")
 
     while len(chosen_pokemons) < 3:
-        # Prepare data for tabulate
+        # Prepare data
         table_data = [[i + 1, pokemon.name, "/".join(pokemon.types)] for i, pokemon in enumerate(pokemons)]
         print(tabulate(table_data, headers=["No", "Name", "Type"], tablefmt="grid", stralign="center"))
 
