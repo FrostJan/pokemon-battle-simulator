@@ -8,7 +8,7 @@ class Pokemon:
         self.strong_against = strong_against
         self.weak_against = weak_against
         self.hp = random.uniform(40, 50)  # HP between 40 and 50
-        self.power = random.randint(7, 10)  # Attack power between 7 and 10
+        self.power = random.randint(9, 10)  # Attack power between 7 and 10
         self.is_defending = False
         self.defense_turns = 0  # Track number of turns defense is active
         self.poisoned = False
@@ -66,11 +66,14 @@ class Pokemon:
 
     def calculate_damage(self, opponent):
         damage = self.power
+        multiplier = 1.0  # Default multiplier
         if any(t in opponent.weak_against for t in self.types):
             damage *= 1.5  # Strong against
+            multiplier = 1.5
         elif any(t in opponent.strong_against for t in self.types):
             damage *= 0.5  # Weak against
-        return damage
+            multiplier = 0.5
+        return damage, multiplier  # Return both damage and multiplier
     
 def print_centered_header(header):
     max_length = 100
@@ -130,12 +133,12 @@ def display_queue(player_name, pokemons):
     ]
     print(tabulate(table_data, headers=["No", "Name", "Type", "Health", "Dmg", "Condition"], tablefmt="grid", stralign="center"))
 
-def display_action_result(player_name, action, pokemon, opponent, damage=None, switch_hp_change=None):
+def display_action_result(player_name, action, pokemon, opponent, damage=None, switch_hp_change=None, multiplier=None):
     print_centered_header(f"{player_name} Action")
     if action == "z" and damage is not None:
         poison_effect = f" and inflicting poison damage!" if opponent.poisoned else ""
         fainted_status = " Fainted!!" if opponent.hp <= 0 else ""
-        action_detail = f"{pokemon.name} attacks {opponent.name} causing {damage:.2f} damage!{poison_effect} {opponent.hp + damage:.2f} > {opponent.hp:.2f}{fainted_status}"
+        action_detail = f"{pokemon.name} attacks{(' (SA)' if multiplier == 1.5 else ' (WA)' if multiplier == 0.5 else '')} {opponent.name} causing {damage:.2f} damage! {opponent.hp + damage:.2f} > {opponent.hp:.2f}{fainted_status}"
     elif action == "v":
         action_detail = f"{pokemon.name} heals, restoring health! {pokemon.hp - 20:.2f} > {pokemon.hp:.2f}"
     else:
@@ -197,9 +200,9 @@ def battle(pokemon1, pokemon2, player1_name, player2_name, player1_pokemons, pla
             action1 = input("Choose Action: ").strip().lower()
 
             if action1 == "z":
-                damage = pokemon1.calculate_damage(pokemon2)
+                damage, multiplier = pokemon1.calculate_damage(pokemon2)
                 pokemon2.take_damage(damage)
-                display_action_result(player1_name, action1, pokemon1, pokemon2, damage)
+                display_action_result(player1_name, action1, pokemon1, pokemon2, damage, multiplier=multiplier)
                 break
             elif action1 == "x":
                 pokemon1.is_defending = True
@@ -250,9 +253,9 @@ def battle(pokemon1, pokemon2, player1_name, player2_name, player1_pokemons, pla
             action2 = input("Choose Action: ").strip().lower()
 
             if action2 == "z":
-                damage = pokemon2.calculate_damage(pokemon1)
+                damage, multiplier = pokemon2.calculate_damage(pokemon1)
                 pokemon1.take_damage(damage)
-                display_action_result(player2_name, action2, pokemon2, pokemon1, damage)
+                display_action_result(player2_name, action2, pokemon2, pokemon1, damage, multiplier=multiplier)
                 break
             elif action2 == "x":
                 pokemon2.is_defending = True
